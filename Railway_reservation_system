@@ -1,0 +1,221 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+public class RailwayReservationSystem {
+    public static int firstTrainPassengerStrength = 50;
+    public static int secondTrainPassengerStrength = 50;
+    public static int thirdTrainPassengerStrength = 50;
+    public static int bookedTicketCount = 0;
+    public static ArrayList<String> passengerNames = new ArrayList<>();
+    public static ArrayList<String> passengerPhoneNumbers = new ArrayList<>();
+    public static ArrayList<Integer> ticketFares = new ArrayList<>();
+    public static ArrayList<Integer> seatNumbers = new ArrayList<>();
+    public static ArrayList<String> trainDetails = new ArrayList<>();
+
+    public static void main(String[] args) {
+        boolean isRunning = true;
+        while (isRunning) {
+            System.out.println("*************************************************");
+            System.out.println("Railway Reservation System");
+            System.out.println("*************************************************");
+            System.out.println("Available Options:");
+            System.out.println("1. Book Your Ticket");
+            System.out.println("2. Display All Ticket Information");
+            System.out.println("3. Search Your Ticket by Phone Number");
+            System.out.println("4. Cancel Your Ticket by Phone Number");
+            System.out.println("5. Exit");
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter Your Choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    bookTicket();
+                    break;
+                case 2:
+                    displayAllTickets();
+                    break;
+                case 3:
+                    searchTicket();
+                    break;
+                case 4:
+                    cancelTicket();
+                    break;
+                case 5:
+                    System.out.println("Thank you for using the Railway Reservation System!");
+                    isRunning = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    public static void increasePassengerStrength(int trainNumber) {
+        if (trainNumber == 1010) {
+            firstTrainPassengerStrength++;
+        } else if (trainNumber == 2013) {
+            secondTrainPassengerStrength++;
+        } else if (trainNumber == 3045) {
+            thirdTrainPassengerStrength++;
+        }
+    }
+
+    public static void bookTicket() {
+        System.out.println("Available Trains:");
+        System.out.println("1. Mumbai-Delhi (Train Number: 1010)");
+        System.out.println("2. Delhi-Jaipur (Train Number: 2013)");
+        System.out.println("3. Prayagraj-Delhi (Train Number: 3045)");
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Train Number: ");
+        int trainNumber = scanner.nextInt();
+
+        if (checkSeatAvailability(trainNumber)) {
+            scanner.nextLine();  // Consume the newline character
+            System.out.print("Enter Your Name: ");
+            String passengerName = scanner.nextLine();
+
+            System.out.print("Enter Your Phone Number: ");
+            String phoneNumber = scanner.nextLine();
+
+            Random rand = new Random();
+            int seatNo = rand.nextInt(1000 - 500 + 1) + 500;
+
+            int fare = getTicketPrice(trainNumber);
+            String trainInfo = getTrainDetails(trainNumber);
+
+            passengerNames.add(passengerName);
+            passengerPhoneNumbers.add(phoneNumber);
+            ticketFares.add(fare);
+            seatNumbers.add(seatNo);
+            trainDetails.add(trainInfo);
+
+            decreasePassengerStrength(trainNumber);
+
+            System.out.println("Ticket booked successfully!");
+            bookedTicketCount++;
+        } else {
+            System.out.println("Sorry, the selected train is fully booked.");
+        }
+    }
+
+    public static boolean checkSeatAvailability(int trainNumber) {
+        if (trainNumber == 1010 && firstTrainPassengerStrength > 0) {
+            return true;
+        } else if (trainNumber == 2013 && secondTrainPassengerStrength > 0) {
+            return true;
+        } else if (trainNumber == 3045 && thirdTrainPassengerStrength > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static int getTicketPrice(int trainNumber) {
+        if (trainNumber == 1010) {
+            return 1000;
+        } else if (trainNumber == 2013) {
+            return 500;
+        } else if (trainNumber == 3045) {
+            return 800;
+        }
+        return 0;
+    }
+
+    public static String getTrainDetails(int trainNumber) {
+        if (trainNumber == 1010) {
+            return "Mumbai-Delhi   13:05   Mumbai Superfast";
+        } else if (trainNumber == 2013) {
+            return "Delhi-Jaipur   7:00    Delhi Superfast";
+        } else if (trainNumber == 3045) {
+            return "Prayagraj-Delhi    10:00      Prayagraj EXP";
+        }
+        return "";
+    }
+
+    public static void decreasePassengerStrength(int trainNumber) {
+        if (trainNumber == 1010) {
+            firstTrainPassengerStrength--;
+        } else if (trainNumber == 2013) {
+            secondTrainPassengerStrength--;
+        } else if (trainNumber == 3045) {
+            thirdTrainPassengerStrength--;
+        }
+    }
+
+    public static void displayAllTickets() {
+        System.out.println();
+        System.out.println("***************************************************************************************************");
+        System.out.println("Sno\t\t\tTicket Owner\t\t\tPhone Number\t\t\tSeat Number\t\t\tTrain Ticket Price\t\t\tTrain Details");
+        if (passengerNames.size() > 0) {
+            for (int i = 0; i < passengerNames.size(); i++) {
+                System.out.println((i + 1) + "\t\t\t" + passengerNames.get(i) + "\t\t\t" +
+                        passengerPhoneNumbers.get(i) + "\t\t\t" + seatNumbers.get(i) + "\t\t\t" +
+                        ticketFares.get(i) + "\t\t\t" + trainDetails.get(i));
+            }
+        } else {
+            System.out.println("No Ticket Is Booked So Far...");
+        }
+        System.out.println("***************************************************************************************************");
+    }
+
+    public static void searchTicket() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Phone Number to Search: ");
+        String phoneNumber = scanner.next();
+
+        boolean found = false;
+
+        for (int i = 0; i < passengerPhoneNumbers.size(); i++) {
+            if (phoneNumber.equals(passengerPhoneNumbers.get(i))) {
+                found = true;
+                System.out.println("Ticket Details for Phone Number " + phoneNumber + ":");
+                System.out.println("Ticket Owner: " + passengerNames.get(i));
+                System.out.println("Seat Number: " + seatNumbers.get(i));
+                System.out.println("Ticket Price: " + ticketFares.get(i));
+                System.out.println("Train Details: " + trainDetails.get(i));
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Ticket not found for the given phone number.");
+        }
+    }
+
+    public static void cancelTicket() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Phone Number to Cancel Ticket: ");
+        String phoneNumber = scanner.next();
+
+        int index = passengerPhoneNumbers.indexOf(phoneNumber);
+
+        if (index != -1) {
+            int trainNumber = getTrainNumber(trainDetails.get(index));
+            increasePassengerStrength(trainNumber);
+
+            passengerNames.remove(index);
+            passengerPhoneNumbers.remove(index);
+            ticketFares.remove(index);
+            seatNumbers.remove(index);
+            trainDetails.remove(index);
+
+            System.out.println("Ticket for Phone Number " + phoneNumber + " has been canceled successfully.");
+            bookedTicketCount--;
+        } else {
+            System.out.println("Ticket not found for the given phone number.");
+        }
+    }
+
+    public static int getTrainNumber(String trainInfo) {
+        if (trainInfo.contains("1010")) {
+            return 1010;
+        } else if (trainInfo.contains("2013")) {
+            return 2013;
+        } else if (trainInfo.contains("3045")) {
+            return 3045;
+        }
+        return 0;
+    }
+}
